@@ -1,4 +1,5 @@
 ﻿using BirdApp.Scraping;
+using BirdApp.Database;
 
 var scraper = new BirdScraper();
 
@@ -6,6 +7,10 @@ var birds = await scraper.ScrapeAsync(3);
 
 Console.WriteLine();
 Console.WriteLine($"Ukupno obrađeno ptica: {birds.Count}");
+
+var database = new MongoDbService();
+
+await database.TestConnectionAsync();
 
 Console.WriteLine();
 Console.WriteLine("Pritisni Enter za zatvaranje...");
