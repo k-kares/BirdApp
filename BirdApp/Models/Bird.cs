@@ -4,8 +4,10 @@ using System.Text;
 
 namespace BirdApp.Models
 {
-    internal class Bird
+    public class Bird
     {
+        public long TaxonId { get; set; }
+
         public string ScientificName { get; set; } = "";
         public string CanonicalName { get; set; } = "";
         public string Rank { get; set; } = "";
