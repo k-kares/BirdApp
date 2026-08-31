@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Minio" Version="7.0.0" />
+    <PackageReference Include="MongoDB.Driver" Version="3.11.1" />
+  </ItemGroup>
+
 </Project>
