@@ -1,5 +1,8 @@
 ﻿using BirdApp.Models;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using System.Text.Json;
 
 namespace BirdApp.Database;
 
@@ -69,6 +72,21 @@ public class MongoDbService
 
     public async Task SaveObservationAsync(Observation observation)
     {
-        await _observations.InsertOneAsync(observation);
+        var bsonDocument = new BsonDocument
+    {
+        { "TaxonId", observation.TaxonId },
+        { "Latitude", observation.Latitude },
+        { "Longitude", observation.Longitude },
+        {
+            "BiologicalData",
+            BsonDocument.Parse(
+                JsonSerializer.Serialize(
+                    observation.BiologicalData))
+        }
+    };
+
+        await _database
+            .GetCollection<BsonDocument>("observations")
+            .InsertOneAsync(bsonDocument);
     }
 }

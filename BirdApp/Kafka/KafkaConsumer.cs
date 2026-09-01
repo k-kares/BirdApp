@@ -20,7 +20,7 @@ public class KafkaConsumer
         _config = new ConsumerConfig
         {
             BootstrapServers = "localhost:9092",
-            GroupId = "birdapp-consumer-v4",
+            GroupId = "birdapp-consumer-v5",
             AutoOffsetReset = AutoOffsetReset.Earliest
         };
     }
