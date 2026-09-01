@@ -1,0 +1,4 @@
+﻿za pokretanje projekta u powershellu pokrenuti skriptu setup.ps1 (.\Scripts\setup.ps1)
+skripta pokreće kafku, minio i mongodb u dockeru, te kreira potrebne baze i topice.
+sama skripta također pokreće dotnet run pa pokrece projekt.
+za brisanje cijelog docker okruženja možete pokrenuti skriptu clean.ps1 (.\Scripts\clean.ps1) 
