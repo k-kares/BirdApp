@@ -109,7 +109,7 @@ var responseBody = await response.Content.ReadAsStringAsync();
 Console.WriteLine("Odgovor API-ja:");
 Console.WriteLine(responseBody);
 
-var classifier = new BirdClassificationService();
+var classifier = new BirdClassificationService(database, minio);
 
 foreach (var file in audioFiles)
 {

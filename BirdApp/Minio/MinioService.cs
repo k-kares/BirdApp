@@ -65,4 +65,27 @@ public class MinioService
         Console.WriteLine(
             $"Uploadano u MinIO i spremljeno u MongoDB: {fileName}");
     }
+
+    public async Task UploadClassificationLogAsync(
+    string fileName,
+    string logContent)
+    {
+        var objectName =
+            $"logs/{Path.GetFileNameWithoutExtension(fileName)}_classification.json";
+
+        using var stream =
+            new MemoryStream(
+                System.Text.Encoding.UTF8.GetBytes(logContent));
+
+        await _client.PutObjectAsync(
+            new PutObjectArgs()
+                .WithBucket(BucketName)
+                .WithObject(objectName)
+                .WithStreamData(stream)
+                .WithObjectSize(stream.Length)
+                .WithContentType("application/json"));
+
+        Console.WriteLine(
+            $"Classification log spremljen u MinIO: {objectName}");
+    }
 }

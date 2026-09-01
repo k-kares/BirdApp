@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,7 +8,10 @@ namespace BirdApp.Models;
 
 public class AudioClassification
 {
-    public string AudioFileId { get; set; } = "";
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string? Id { get; set; }
+    public ObjectId AudioFileId { get; set; }
 
     public string FileName { get; set; } = "";
 

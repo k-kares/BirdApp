@@ -12,6 +12,7 @@ public class MongoDbService
     private readonly IMongoCollection<Bird> _birds;
     private readonly IMongoCollection<Observation> _observations;
     private readonly IMongoCollection<AudioFile> _audioFiles;
+    private readonly IMongoCollection<AudioClassification> _audioClassifications;
 
     public MongoDbService()
     {
@@ -24,6 +25,8 @@ public class MongoDbService
         _audioFiles = _database.GetCollection<AudioFile>("audioFiles");
 
         _observations = _database.GetCollection<Observation>("observations");
+
+        _audioClassifications =_database.GetCollection<AudioClassification>("audioClassifications");
 
         CreateIndexes();
     }
@@ -43,6 +46,27 @@ public class MongoDbService
             indexOptions);
 
         _birds.Indexes.CreateOne(indexModel);
+
+        var classificationIndexKeys =
+    Builders<AudioClassification>.IndexKeys
+        .Ascending(c => c.AudioFileId)
+        .Ascending(c => c.StartTime)
+        .Ascending(c => c.EndTime)
+        .Ascending(c => c.ScientificName);
+
+        var classificationIndexOptions =
+            new CreateIndexOptions
+            {
+                Unique = true
+            };
+
+        var classificationIndex =
+            new CreateIndexModel<AudioClassification>(
+                classificationIndexKeys,
+                classificationIndexOptions);
+
+        _audioClassifications.Indexes.CreateOne(
+            classificationIndex);
     }
 
     public async Task SaveBirdsAsync(List<Bird> birds)
@@ -98,5 +122,65 @@ public class MongoDbService
 
         Console.WriteLine(
             $"Metadata spremljena u MongoDB: {audioFile.FileName}");
+    }
+
+    public async Task SaveAudioClassificationAsync(
+    AudioClassification classification)
+    {
+        var filter =
+            Builders<AudioClassification>.Filter.And(
+                Builders<AudioClassification>.Filter.Eq(
+                    c => c.AudioFileId,
+                    classification.AudioFileId),
+
+                Builders<AudioClassification>.Filter.Eq(
+                    c => c.StartTime,
+                    classification.StartTime),
+
+                Builders<AudioClassification>.Filter.Eq(
+                    c => c.EndTime,
+                    classification.EndTime),
+
+                Builders<AudioClassification>.Filter.Eq(
+                    c => c.ScientificName,
+                    classification.ScientificName)
+            );
+
+        var existing =
+            await _audioClassifications
+                .Find(filter)
+                .FirstOrDefaultAsync();
+
+        if (existing != null)
+        {
+            Console.WriteLine(
+                $"Klasifikacija već postoji: " +
+                $"{classification.FileName} - " +
+                $"{classification.ScientificName}");
+
+            return;
+        }
+
+        await _audioClassifications.InsertOneAsync(
+            classification);
+
+        Console.WriteLine(
+            $"Klasifikacija spremljena: " +
+            $"{classification.FileName} - " +
+            $"{classification.ScientificName}");
+    }
+
+    public async Task<AudioFile?> GetAudioFileAsync(string fileName)
+    {
+        return await _audioFiles
+            .Find(a => a.FileName == fileName)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<List<AudioFile>> GetAudioFilesAsync()
+    {
+        return await _audioFiles
+            .Find(_ => true)
+            .ToListAsync();
     }
 }
