@@ -18,7 +18,7 @@ public class BirdScraper
                 });
 
         var page = await browser.NewPageAsync();
-
+        
         // ============================================
         // FAZA 1: SAKUPLJANJE SVIH HREFOVA
         // ============================================

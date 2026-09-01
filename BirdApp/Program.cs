@@ -2,19 +2,44 @@
 using BirdApp.Database;
 using BirdApp.Kafka;
 using BirdApp.Minio;
+using BirdApp.Models;
 using BirdApp.Scraping;
 using System.Net.Http.Headers;
 
-var scraper = new BirdScraper();
-
-var birds = await scraper.ScrapeAsync(1);
-
-Console.WriteLine();
-Console.WriteLine($"Ukupno obrađeno ptica: {birds.Count}");
-
 var database = new MongoDbService();
 
-await database.SaveBirdsAsync(birds);
+var existingBirds = await database.GetBirdsAsync();
+
+List<Bird> birds;
+
+if (existingBirds.Count > 0)
+{
+    Console.WriteLine(
+        $"MongoDB već sadrži podatke o pticama: {existingBirds.Count}");
+
+    Console.WriteLine(
+        "Web scraping se preskače.");
+
+    birds = existingBirds;
+}
+else
+{
+    Console.WriteLine(
+        "MongoDB nema podatke o pticama.");
+
+    Console.WriteLine(
+        "Pokrećem web scraping...");
+
+    var scraper = new BirdScraper();
+
+    birds = await scraper.ScrapeAsync(50);
+
+    Console.WriteLine();
+    Console.WriteLine(
+        $"Ukupno obrađeno ptica: {birds.Count}");
+
+    await database.SaveBirdsAsync(birds);
+}
 
 var observationGenerator = new ObservationGenerator(database);
 
