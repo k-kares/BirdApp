@@ -3,6 +3,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace BirdApp.Database;
 
@@ -182,5 +183,42 @@ public class MongoDbService
         return await _audioFiles
             .Find(_ => true)
             .ToListAsync();
+    }
+
+    public async Task<Bird?> GetBirdByCanonicalNameAsync(
+     string canonicalName)
+    {
+        var normalizedName = canonicalName.Trim();
+
+        var birds = await _birds
+            .Find(_ => true)
+            .ToListAsync();
+
+        return birds.FirstOrDefault(b =>
+            string.Equals(
+                b.CanonicalName?.Trim(),
+                normalizedName,
+                StringComparison.OrdinalIgnoreCase));
+    }
+
+    public async Task<List<ObjectId>> GetObservationIdsByTaxonIdAsync(
+    long taxonId)
+    {
+        var observations =
+            _database.GetCollection<BsonDocument>("observations");
+
+        var filter =
+            Builders<BsonDocument>.Filter.Eq(
+                "TaxonId",
+                taxonId);
+
+        var documents = await observations
+            .Find(filter)
+            .ToListAsync();
+
+        return documents
+            .Where(document => document.Contains("_id"))
+            .Select(document => document["_id"].AsObjectId)
+            .ToList();
     }
 }

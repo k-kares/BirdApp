@@ -11,9 +11,14 @@ public class AudioClassification
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; }
+
     public ObjectId AudioFileId { get; set; }
 
     public string FileName { get; set; } = "";
+
+    public long? TaxonId { get; set; }
+
+    public List<ObjectId> ObservationIds { get; set; } = new();
 
     public string CommonName { get; set; } = "";
 

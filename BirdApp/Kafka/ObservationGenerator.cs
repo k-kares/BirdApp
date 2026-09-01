@@ -39,10 +39,39 @@ public class ObservationGenerator
             return;
         }
 
-        var selectedBirds = birds
+        var preferredCanonicalNames = new[]
+{
+    "Perdicula asiatica",
+    "Numida meleagris"
+};
+
+        var selectedBirds = new List<Bird>();
+
+        foreach (var canonicalName in preferredCanonicalNames)
+        {
+            var bird = birds.FirstOrDefault(b =>
+                string.Equals(
+                    b.CanonicalName,
+                    canonicalName,
+                    StringComparison.OrdinalIgnoreCase));
+
+            if (bird != null)
+            {
+                selectedBirds.Add(bird);
+            }
+        }
+
+        var remainingBirds = birds
+            .Where(b => !selectedBirds.Any(
+                selected => selected.TaxonId == b.TaxonId))
             .OrderBy(_ => Random.Shared.Next())
-            .Take(Math.Min(numberOfObservations, birds.Count))
+            .Take(
+                Math.Max(
+                    0,
+                    numberOfObservations - selectedBirds.Count))
             .ToList();
+
+        selectedBirds.AddRange(remainingBirds);
 
         var config = new ProducerConfig
         {
@@ -104,14 +133,26 @@ public class ObservationGenerator
         using var consumer =
             new ConsumerBuilder<Ignore, string>(config).Build();
 
-        consumer.Subscribe("bird-observations");
+        try
+        {
+            consumer.Subscribe("bird-observations");
 
-        var result = consumer.Consume(
-            TimeSpan.FromSeconds(2));
+            var result = consumer.Consume(
+                TimeSpan.FromSeconds(2));
 
-        consumer.Close();
+            consumer.Close();
 
-        return result != null;
+            return result != null;
+        }
+        catch (ConsumeException ex)
+        {
+            consumer.Close();
+
+            Console.WriteLine(
+                $"Kafka topic nije dostupan: {ex.Error.Reason}");
+
+            return false;
+        }
     }
 
     private static string GetRandomHabitat()

@@ -159,6 +159,25 @@ public class BirdClassificationService
 
         foreach (var item in result.Results)
         {
+            var bird =
+                await _database.GetBirdByCanonicalNameAsync(
+                    item.ScientificName);
+
+            Console.WriteLine(
+                 $"Tražim vrstu: '{item.ScientificName}'");
+
+            if (bird == null)
+            {
+                Console.WriteLine(
+                    $"NIJE pronađena u birds: '{item.ScientificName}'");
+            }
+            else
+            {
+                Console.WriteLine(
+                    $"PRONAĐENA: '{bird.ScientificName}', " +
+                    $"TaxonId={bird.TaxonId}");
+            }
+
             var classification = new AudioClassification
             {
                 AudioFileId = audioFile.Id,
@@ -170,6 +189,26 @@ public class BirdClassificationService
                 Confidence = item.Confidence,
                 Label = item.Label
             };
+
+            if (bird != null)
+            {
+                classification.TaxonId = bird.TaxonId;
+
+                classification.ObservationIds =
+                    await _database.GetObservationIdsByTaxonIdAsync(
+                        bird.TaxonId);
+
+                Console.WriteLine(
+                    $"Povezano s vrstom: {bird.ScientificName}, " +
+                    $"TaxonId={bird.TaxonId}, " +
+                    $"opažanja={classification.ObservationIds.Count}");
+            }
+            else
+            {
+                Console.WriteLine(
+                    $"Vrsta nije pronađena u birds: " +
+                    $"{item.ScientificName}");
+            }
 
             await _database.SaveAudioClassificationAsync(
                 classification);
