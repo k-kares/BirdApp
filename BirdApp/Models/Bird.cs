@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace BirdApp.Models
 {
+    [BsonIgnoreExtraElements]
     public class Bird
     {
         public long TaxonId { get; set; }
