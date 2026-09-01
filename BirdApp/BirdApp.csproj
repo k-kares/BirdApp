@@ -8,14 +8,44 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Audio\Acryllium_vulturinum.mp3" />
+    <None Remove="Audio\Agelastes_meleagrides.mp3" />
+    <None Remove="Audio\Agelastes_niger.wav" />
+    <None Remove="Audio\Guttera_pucherani.wav" />
+    <None Remove="Audio\Numida_meleagris.mp3" />
+    <None Remove="Audio\Perdicula_argoondah.mp3" />
+    <None Remove="Audio\Perdicula_asiatica.mp3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Audio\Acryllium_vulturinum.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Audio\Agelastes_meleagrides.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Audio\Agelastes_niger.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Audio\Guttera_pucherani.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Audio\Numida_meleagris.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Audio\Perdicula_argoondah.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Audio\Perdicula_asiatica.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Confluent.Kafka" Version="2.15.0" />
     <PackageReference Include="Microsoft.Playwright" Version="1.62.0" />
     <PackageReference Include="Minio" Version="7.0.0" />
     <PackageReference Include="MongoDB.Driver" Version="3.11.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Audio\" />
   </ItemGroup>
 
 </Project>

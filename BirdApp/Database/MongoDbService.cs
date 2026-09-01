@@ -10,8 +10,8 @@ public class MongoDbService
 {
     private readonly IMongoDatabase _database;
     private readonly IMongoCollection<Bird> _birds;
-
     private readonly IMongoCollection<Observation> _observations;
+    private readonly IMongoCollection<AudioFile> _audioFiles;
 
     public MongoDbService()
     {
@@ -20,6 +20,8 @@ public class MongoDbService
         _database = client.GetDatabase("BirdApp");
 
         _birds = _database.GetCollection<Bird>("birds");
+
+        _audioFiles = _database.GetCollection<AudioFile>("audioFiles");
 
         _observations = _database.GetCollection<Observation>("observations");
 
@@ -88,5 +90,13 @@ public class MongoDbService
         await _database
             .GetCollection<BsonDocument>("observations")
             .InsertOneAsync(bsonDocument);
+    }
+
+    public async Task SaveAudioFileAsync(AudioFile audioFile)
+    {
+        await _audioFiles.InsertOneAsync(audioFile);
+
+        Console.WriteLine(
+            $"Metadata spremljena u MongoDB: {audioFile.FileName}");
     }
 }
